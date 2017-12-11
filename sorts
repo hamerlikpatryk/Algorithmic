@@ -1,0 +1,228 @@
+#include <iostream>
+#include <cstdlib>
+#include <ctime>
+#include <fstream>
+#include <algorithm>
+
+using namespace std;
+
+bool czybyla(int iLiczba, int tab[], int ile) /////////////czy liczba się powtórzyła
+{
+	if (ile <= 0)
+		return false;
+
+	int i = 0;
+	do
+	{
+		if (tab[i] == iLiczba)
+			return true;
+
+		i++;
+	} while (i < ile);
+
+	return false;
+}
+
+void merge(int wylosowane[], int start, int srodek, int koniec)   //////////merge sort
+{
+int *tab_pom = new int[(koniec-start)]; // utworzenie tablicy pomocniczej
+int i = start, j = srodek+1, k = 0; // zmienne pomocnicze
+
+while (i <= srodek && j <= koniec)
+{
+if (wylosowane[j] < wylosowane[i])
+{
+tab_pom[k] = wylosowane[j];
+j++;
+}
+else
+{
+tab_pom[k] = wylosowane[i];
+i++;
+}
+k++;
+}
+
+if (i <= srodek)
+{
+while (i <= srodek)
+{
+tab_pom[k] = wylosowane[i];
+i++;
+k++;
+}
+}
+else
+{
+while (j <= koniec)
+{
+tab_pom[k] = wylosowane[j];
+j++;
+k++;
+}
+}
+
+for (i = 0; i <= koniec-start; i++)
+wylosowane[start+i] = tab_pom[i];
+
+cout << endl;
+for (i = start; i <= koniec; i++) // wypisanie posortowanej tablicy
+cout << "tablica[" << i << "] = " << wylosowane[i] << endl;
+}
+
+void merge_sort(int wylosowane[], int start, int koniec)
+{
+int srodek;
+
+if (start != koniec)
+{
+srodek = (start + koniec)/2;
+merge_sort(wylosowane, start, srodek);
+merge_sort(wylosowane, srodek+1, koniec);
+merge(wylosowane, start, srodek, koniec);
+}
+}
+
+
+
+int wylosuj()
+{
+	return(rand() % 100000) + 1;
+}
+
+int main()
+{
+    int n;
+    cout<<"Ile liczb wylosowac?\n";
+    cin >>n;
+
+    srand(time(0));
+    int * wylosowane = new int[n];
+	int wylosowanych = 0;
+	do
+	{
+		int liczba = wylosuj();
+		if (czybyla(liczba, wylosowane, wylosowanych) == false)
+		{
+			wylosowane[wylosowanych] = liczba;
+			wylosowanych++;
+		} //if
+	} while (wylosowanych < n);
+
+	wylosowanych = 0;
+	do
+	{
+		cout<<wylosowane[wylosowanych] << endl;
+		wylosowanych++;
+	} while (wylosowanych < n);
+
+	////////////////////////
+    //////////////////////////               zapis do pliku
+    //////////////////
+
+	fstream plik;
+	plik.open("listawejsciowa.txt",ios::out);
+		for (int i = 0; i < n; i++)
+	 {
+			plik << wylosowane[i] << "\n";
+
+	 }
+
+    int ktorysort;
+    cout<<"wcisnij 1-shell sort, 2-merge sort, 3 quick sort \n";
+    cin>>ktorysort;
+
+    switch(ktorysort)
+    {
+case 1:
+    int jakdzielic;
+    cout<< "Chcesz podzielić przez 2 czy 3?\n";
+    cin>>jakdzielic;
+    if(jakdzielic=2)
+    {
+        int i,j, k, temp, wywop = 0;
+	// Gap 'i' between index of the element to be compared, initially n/2.
+        for(i = n/2; i > 0; i = i/2)
+        {
+            for(j = i; j < n; j++)
+            {
+                for(k = j-i; k >= 0; k = k-i)
+                {
+				// If value at higher index is greater, then break the loop.
+                    if(wylosowane[k+i] >= wylosowane[k])
+                    break;
+                    // Switch the values otherwise.
+                    else
+                    {
+                        temp = wylosowane[k];
+                        wylosowane[k] = wylosowane[k+i];
+                        wylosowane[k+i] = temp;
+                        wywop++;
+                    }
+                }
+            }
+        }
+
+	cout<<"Posortowane liczby: ";
+	for (i = 0; i < n; i++)
+		cout<<"->"<<wylosowane[i];
+		cout<<"\n";
+		cout<<"funkcja wywolala sie " <<wywop<<"razy";
+	break;
+    }
+    if (jakdzielic=3)
+    {
+    int i,j, k, temp, wywop=0;
+    for(i = n/3; i > 0; i = i/3)
+        {
+            for(j = i; j < n; j++)
+            {
+                for(k = j-i; k >= 0; k = k-i)
+                {
+				// If value at higher index is greater, then break the loop.
+                    if(wylosowane[k+i] >= wylosowane[k])
+                    break;
+                    // Switch the values otherwise.
+                    else
+                    {
+                        temp = wylosowane[k];
+                        wylosowane[k] = wylosowane[k+i];
+                        wylosowane[k+i] = temp;
+                         wywop++;
+                    }
+                }
+            }
+        }
+	cout<<"Posortowane liczby: ";
+	for (i = 0; i < n; i++)
+		cout<<"->"<<wylosowane[i];
+		cout<<"\n";
+		cout<<"funkcja wywolala sie " <<wywop<<"razy";
+	break;
+    }
+case 2:
+
+int i,j;
+int ilosc_liczb = n;
+
+
+
+
+merge_sort(wylosowane, 0, ilosc_liczb-1);
+
+cout << endl << "wynik:" << endl;
+for (i = 0; i < ilosc_liczb; i++) // wypisanie posortowanej tablicy
+cout << "tablica[" << i << "] = " << wylosowane[i] << endl;
+
+delete [] wylosowane;
+break;
+}
+
+
+// zwolnienie tablic zaalokowanych dynamicznie
+
+
+return 0;
+}
+
+
