@@ -1,2 +1,2 @@
-# Algorytmy
+# Algorithmic
 Simple algorithmic exercises
